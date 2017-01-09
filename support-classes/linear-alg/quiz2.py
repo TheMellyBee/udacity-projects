@@ -1,3 +1,5 @@
+from vector import Vector
+
 print "Two"
 vector1 = Vector([8.813, -1.331, -6.247])
 print vector1.magnitude()

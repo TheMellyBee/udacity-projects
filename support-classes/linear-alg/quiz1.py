@@ -1,4 +1,4 @@
-import linear-alg/* 
+from vector import Vector
 
 vector1 =  Vector([8.218,-9.341])
 vector2 =  Vector([-1.129, 2.111])
