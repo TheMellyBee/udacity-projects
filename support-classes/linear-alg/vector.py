@@ -24,6 +24,18 @@ class Vector(object):
         except ZeroDivisionError:
             raise Exception("Cannot normalize the zero vector")
 
+    def dot_product(self, v):
+        return sum([x * y for x,y in zip(self.coordinates, v.coordinates)])
+
+    # TODO fix with exceptions for more stability
+    # TODO change to one function
+    def radian_angle(self, v):
+        dot = self.dot_product(v)
+        return math.acos(dot/(self.magnitude() * v.magnitude()))
+
+    def  degree_angle(self, v):
+        return math.degrees(self.radian_angle(v))
+
     def __init__(self, coordinates):
         try:
             if not coordinates:
@@ -40,6 +52,7 @@ class Vector(object):
 
     def __str__(self):
         return 'Vector: {}'.format(self.coordinates)
+
 
 
     def __eq__(self, v):
