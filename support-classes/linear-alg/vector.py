@@ -1,46 +1,61 @@
-import math
+from math import sqrt, acos, degrees
+from decimal import Decimal, getcontext
+
+getcontext().prec = 30
 
 class Vector(object):
+
     def plus(self, v):
         new_cord = [x + y for x,y in zip(self.coordinates, v.coordinates)]
         return Vector(new_cord)
+
 
     def minus(self, v):
         new_cord = [x - y for x,y in zip(self.coordinates, v.coordinates)]
         return Vector(new_cord)
 
+
     def scalar_mult(self, c):
         new_cord = [c*x for x in self.coordinates]
         return Vector(new_cord)
 
+
     def magnitude(self):
-        return math.sqrt(sum([x**2 for x in self.coordinates]))
+        return sqrt(sum([x**2 for x in self.coordinates]))
+
 
     def normalize(self):
         try:
             mag = self.magnitude()
-            return self.scalar_mult(1/mag)
+            return self.scalar_mult(Decimal('1.0')/mag)
 
         except ZeroDivisionError:
             raise Exception("Cannot normalize the zero vector")
 
+
     def dot_product(self, v):
         return sum([x * y for x,y in zip(self.coordinates, v.coordinates)])
 
-    # TODO fix with exceptions for more stability
-    # TODO change to one function
-    def radian_angle(self, v):
-        dot = self.dot_product(v)
-        return math.acos(dot/(self.magnitude() * v.magnitude()))
 
-    def  degree_angle(self, v):
-        return math.degrees(self.radian_angle(v))
+    def angle_between(self, v, in_degrees=False):
+        try:
+            inner_mult = self.dot_product(v)
+            angle_in_radians = acos(inner_mult/(self.magnitude() * v.magnitude()))
+
+        except ZeroDivisionError:
+            raise Exception("Cannot normalize the zero vector")
+
+        if in_degrees:
+            return degrees(angle_in_radians)
+
+        return angle_in_radians
+
 
     def __init__(self, coordinates):
         try:
             if not coordinates:
                 raise ValueError
-            self.coordinates = tuple(coordinates)
+            self.coordinates = tuple([Decimal(x) for x in coordinates])
             self.dimension = len(coordinates)
 
         except ValueError:

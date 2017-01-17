@@ -13,9 +13,9 @@ print v1.dot_product(v2)
 print "Three"
 v1 = Vector([3.183, -7.627])
 v2 = Vector([-2.668, 5.319])
-print v1.radian_angle(v2)
+print v1.angle_between(v2)
 
 print "Four"
 v1 = Vector([7.35, 0.221, 5.188])
 v2 = Vector([2.751, 8.259, 3.985])
-print v1.degree_angle(v2)
+print v1.angle_between(v2, True)
