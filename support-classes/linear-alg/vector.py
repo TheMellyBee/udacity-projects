@@ -1,7 +1,4 @@
-from math import sqrt, acos, degrees
-from decimal import Decimal, getcontext
-
-getcontext().prec = 30
+from math import sqrt, acos, degrees, pi
 
 class Vector(object):
 
@@ -27,7 +24,7 @@ class Vector(object):
     def normalize(self):
         try:
             mag = self.magnitude()
-            return self.scalar_mult(Decimal('1.0')/mag)
+            return self.scalar_mult(1.0/mag)
 
         except ZeroDivisionError:
             raise Exception("Cannot normalize the zero vector")
@@ -50,12 +47,27 @@ class Vector(object):
 
         return angle_in_radians
 
+    def is_parallel(self, v):
+        if(self.is_zero_vector() or v.is_zero_vector() or
+           self.angle_between(v) == 0 or self.angle_between(v) == pi):
+            return True
+        else:
+            return False
+
+
+    def is_orthogonal(self, v, tolerance=1e-10):
+        return abs(self.dot_product(v)) < tolerance
+
+
+    def is_zero_vector(self, tolerance=1e-10):
+        return self.magnitude() < tolerance
+
 
     def __init__(self, coordinates):
         try:
             if not coordinates:
                 raise ValueError
-            self.coordinates = tuple([Decimal(x) for x in coordinates])
+            self.coordinates = tuple([x for x in coordinates])
             self.dimension = len(coordinates)
 
         except ValueError:
