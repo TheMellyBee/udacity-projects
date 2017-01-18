@@ -2,6 +2,10 @@ from math import sqrt, acos, degrees, pi
 
 class Vector(object):
 
+    CANNOT_NORMALIZE_ZERO_VECTOR_MSG = "Cannot normalize the zero vector"
+    NO_UNIQUE_COMPONENET_PARALLEL_VECTOR_MSG = "No unique parallel component vector to this basis vector"
+    NO_UNIQUE_COMPONENET_ORTHONGONAL_VECTOR_MSG = "No unique orthogonal component vector to this basis vector"
+
     def plus(self, v):
         new_cord = [x + y for x,y in zip(self.coordinates, v.coordinates)]
         return Vector(new_cord)
@@ -40,7 +44,7 @@ class Vector(object):
             angle_in_radians = acos(inner_mult/(self.magnitude() * v.magnitude()))
 
         except ZeroDivisionError:
-            raise Exception("Cannot normalize the zero vector")
+            raise Exception(self.CANNOT_NORMALIZE_ZERO_VECTOR_MSG)
 
         if in_degrees:
             return degrees(angle_in_radians)
@@ -53,6 +57,31 @@ class Vector(object):
             return True
         else:
             return False
+
+    def component_orthogonal_vector(self, v_basis):
+        try:
+            v_project = self.component_projection_vector(v_basis)
+
+        except Exception as e:
+            if str(e) == self.NO_UNIQUE_COMPONENET_PARALLEL_VECTOR_MSG:
+                raise Exception(self.NO_UNIQUE_COMPONENET_ORTHONGONAL_VECTOR_MSG)
+            else:
+                raise e
+
+        return self.minus(v_project)
+
+    def component_projection_vector(self, v_basis):
+        try:
+            u = v_basis.normalize()
+        except Exception as e:
+            if str(e) == self.CANNOT_NORMALIZE_ZERO_VECTOR_MSG:
+                raise Exception(self.NO_UNIQUE_COMPONENET_PARALLEL_VECTOR_MSG)
+            else:
+                raise e
+
+        dot = self.dot_product(u)
+
+        return u.scalar_mult(dot)
 
 
     def is_orthogonal(self, v, tolerance=1e-10):
