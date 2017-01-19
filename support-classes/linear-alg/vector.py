@@ -5,6 +5,7 @@ class Vector(object):
     CANNOT_NORMALIZE_ZERO_VECTOR_MSG = "Cannot normalize the zero vector"
     NO_UNIQUE_COMPONENET_PARALLEL_VECTOR_MSG = "No unique parallel component vector to this basis vector"
     NO_UNIQUE_COMPONENET_ORTHONGONAL_VECTOR_MSG = "No unique orthogonal component vector to this basis vector"
+    ONLY_DEFINED_IN_TWO_OR_THREE_DIM_MSG = "Cross Product is only defined in 2 or 3 dimensions"
 
     def plus(self, v):
         new_cord = [x + y for x,y in zip(self.coordinates, v.coordinates)]
@@ -37,6 +38,46 @@ class Vector(object):
     def dot_product(self, v):
         return sum([x * y for x,y in zip(self.coordinates, v.coordinates)])
 
+    def cross_product(self, v):
+        v1 = self.coordinates
+        v2 = v.coordinates
+
+        try:
+            self.check_dim()
+            v.check_dim()
+
+            x = (v1[1] * v2[2]) - (v2[1] * v1[2])
+            y = -((v1[0] * v2[2]) - (v2[0] * v1[2]))
+            z = (v1[0] * v2[1]) - (v2[0] * v1[1])
+
+            return Vector([x, y, z])
+
+        except ValueError as e:
+            msg = str(e)
+            if msg == 'two dimensional':
+                self_inflated = Vector(self.coordinates + (0, ))
+                v_inflated = Vector(v.coordinates + (0, ))
+                return self_inflated.cross_product(v_inflated)
+            elif msg == 'needs to be in three dimensions':
+                raise Exception(self.ONLY_DEFINED_IN_TWO_OR_THREE_DIM_MSG)
+            else:
+                raise e
+
+    def check_dim(self):
+        if self.dimension == 2:
+            raise ValueError('two dimensional')
+        elif self.dimension != 3:
+            raise ValueError("needs to be in three dimensions")
+
+
+    def area_paralellogram(self, v):
+        cross = self.cross_product(v)
+        return sqrt(sum([x**2 for x in cross.coordinates]))
+
+
+    def area_triangle(self, v):
+        return self.area_paralellogram(v) / 2
+
 
     def angle_between(self, v, in_degrees=False):
         try:
@@ -51,12 +92,14 @@ class Vector(object):
 
         return angle_in_radians
 
+
     def is_parallel(self, v):
         if(self.is_zero_vector() or v.is_zero_vector() or
            self.angle_between(v) == 0 or self.angle_between(v) == pi):
             return True
         else:
             return False
+
 
     def component_orthogonal_vector(self, v_basis):
         try:
@@ -69,6 +112,7 @@ class Vector(object):
                 raise e
 
         return self.minus(v_project)
+
 
     def component_projection_vector(self, v_basis):
         try:
@@ -113,3 +157,6 @@ class Vector(object):
 
     def __eq__(self, v):
         return self.coordinates == v.coordinates
+
+
+Vector([1, 2]).cross_product(Vector([2, 1]))
